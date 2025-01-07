@@ -1,0 +1,42 @@
+.register-container {
+    font-family: Arial, sans-serif;
+    margin: 10px;
+    padding: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: #f4f4f4;
+}
+
+.mb-3 {
+    margin-top: 4px;
+}
+
+.submit-button {
+    color: grey; 
+}
+
+.checkmark::after {
+    display: inline-block;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    margin-left: 10px;
+    vertical-align: middle;
+    text-align: center;
+    line-height: 20px;
+    font-weight: bold;
+}
+
+
+.checkmark.valid::after {
+    background-color: green;
+    color: white;
+    content: '✔';
+}
+
+.checkmark.invalid::after {
+    background-color: red;
+    color: white;
+    content: '✖';
+}

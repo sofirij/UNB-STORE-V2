@@ -1,0 +1,57 @@
+{% extends "layout.html" %}
+
+{% block title %} register {% endblock %}
+
+{% block link %} 
+    <link href="{{ url_for('static', filename='css/register.css')}}" rel="stylesheet">
+{% endblock %}
+
+{% block main %}
+    <div class="mb-5 register-container">
+        <form action="/register" method="post" id="register-form">
+            <fieldset>
+                <div class="mb-3">
+                    <input autocomplete="off" autofocus class="form-control mx-auto w-auto" id="username" name="username" placeholder="Username" type="text">   
+                </div>
+                <div class="mb-3">
+                    <small>
+                        Requirements:
+                        <ul>
+                            <li>Only letters and digts(A-Z, a-z, 0-9)<span class="checkmark" id="check1"></span></li>
+                            <li>Minimium 12 characters<span class="checkmark" id="check2"></span></li>
+                        </ul>
+                    </small>
+                </div>
+
+                <div class="mb-3">
+                    <input class="form-control mx-auto w-auto" name="first-password" id="first-password" placeholder="Password" type="password">
+                </div>
+                <div class="mb-3">
+                    <small>
+                        Requirements:
+                        <ul>
+                            <li>At least one uppercase<span class="checkmark" id="check3"></span></li>
+                            <li>At least one lowercase<span class="checkmark" id="check4"></span></li>
+                            <li>At least one digit<span class="checkmark" id="check5"></span></li>
+                            <li>No spaces or special characters allowed<span class="checkmark" id="check6"></span></li>
+                            <li>Minimium 12 characters<span class="checkmark" id="check7"></span></li>
+                        </ul>
+                    </small>
+                </div>
+
+                <div class="mb-3">
+                    <input class="form-control mx-auto w-auto submit" name="second-password" id="second-password" placeholder="Confirm Password" type="password">
+                </div>
+            </fieldset>
+
+            <div class="mb-3">
+                <input class="form-control mx-auto w-auto submit-button" disabled id="submit" type="submit" value="Register">
+            </div>
+            
+        </form>
+    </div>
+{% endblock %}
+
+{% block script %}
+    src="{{ url_for('static', filename='js/register-confirmation.js') }}"
+{% endblock %}
