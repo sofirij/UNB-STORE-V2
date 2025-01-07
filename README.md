@@ -37,4 +37,4 @@ Recreation of the original UNB STORE but modified for learning the web developme
 
     ## Specifications for the login page
         You provide your already registered 'username' and 'password'
-        If the information is not valid the information is cleared and you are to re-enter the information else you are taken to the homepage
+        If the information is not valid the information is cleared and you are to re-enter the information else you are logged in and taken to the homepage

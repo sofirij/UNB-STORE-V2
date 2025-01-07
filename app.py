@@ -65,6 +65,11 @@ def checkRegisterUsername():
     if username in usernames:
         return jsonify({'exists': True})
     else:
+        # register the user to the db
+        with sqlite3.connect("app.db") as conn:
+            cursor = conn.cursor()
+            query = "INSERT INTO users (username, password_hash, is_active, is_admin) VALUES ()"
+            cursor.execute(query)
         return jsonify({'exists': False})
 
 if __name__ == "__main__":
