@@ -3,7 +3,6 @@ Still in development.
 
 # Database schema for the users
     id - INT
-    user_id - INT
     username - TEXT
     password_hash - TEXT
     created_at - CURRENT TIMESTAMP
