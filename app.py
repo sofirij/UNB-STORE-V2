@@ -3,7 +3,7 @@ from flask_session import Session
 from helpers import login_required
 from dotenv import load_dotenv
 from datetime import timedelta
-from functions import registerUsername, usernameExists, loginUser, getUserId
+from functions import *
 import os
 import sqlite3
 
@@ -16,6 +16,10 @@ app.secret_key = os.getenv("SECRET_KEY", "fallback-secret-key")
 # configure session to use filesystem
 app.config["SESSION PERMANENT"] = False
 app.config["SESSION_TYPE"] = "filesystem"
+
+# set the session lifetime
+app.permanent_session_lifetime = timedelta(minutes=10)
+
 Session(app)
 
 
@@ -38,17 +42,21 @@ def register():
     """Display the registration form for users to input information"""
     return render_template("register.html")
 
-@app.route("/login", methods=["POST"])
+@app.route("/login", methods=["GET", "POST"])
 def login():
     """Allow already registered users to login to their account"""
-    data = request.get_json()
-    username = data.get('username')
-    password = data.get('password')
-    if loginUser(username, password):
-        session["user_id"]
-        return jsonify({"successful": True})
+    if request.method == "POST":
+        data = request.get_json()
+        username = data.get('username')
+        password = data.get('password')
+        
+        if loginUser(username, password):
+            session["user_id"] = getUserId(username)
+            return jsonify({"successful": True})
+        else:
+            return jsonify({"successful": False})
     else:
-        return jsonify({"successful": False})
+        return render_template("login.html")
 
 @app.route("/registerUser", methods=["POST"])
 def registerUser():
@@ -62,6 +70,16 @@ def registerUser():
     else:
         return jsonify({"successful": False})
 
+@app.route("/logout", methods=["GET"])
+def logout():
+    """Clear the users session"""
+    session.clear()
+    return redirect("/")
+
+@app.route("/profile", methods=["GET"])
+def profile():
+    """"Allow users to manage information about their profile"""
+    return render_template("profile.html")
 
 if __name__ == "__main__":
     app.run(debug=True, host='0.0.0.0', port=5000)

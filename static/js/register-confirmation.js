@@ -138,11 +138,11 @@ function registerUser(username, password) {
     })
     .catch(error => {
         console.error("Error:", error);
-        alert("Something went wrong. Please try again later");
+        alert("Registration failed try again later.");
     });
 }
 
-function loginUser() {
+function loginUser(username, password) {
     fetch("/login", {
         method: "POST",
         headers: {
@@ -152,21 +152,25 @@ function loginUser() {
             username: username,
             password: password
         })
-        .then(response => {
-            if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`);
-            }
-            return response.json();
-        })
-        .then(data => {
-            if (data.successful) {
-                
-            }
-            else {
-                alert("Username or password is incorrect!");
-            }
-        })
     })
+    .then(response => {
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        return response.json();
+    })
+    .then(data => {
+        if (data.successful) {
+            window.location.replace("/");
+        }
+        else {
+            alert("Username or password is incorrect!");
+        }
+    })
+    .catch(error => {
+        console.error("Error:", error)
+        alert("Login failed try again later");
+    });
 }
 
 function checkUsername(e) {

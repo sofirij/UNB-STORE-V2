@@ -40,4 +40,11 @@ def loginUser(username, password):
     return check_password_hash(passwordHash, password)
 
 
-def getId
+def getUserId(username):
+    """"Return id for the specified username"""
+    with sqlite3.connect("app.db") as conn:
+        cursor = conn.cursor()
+        query = "SELECT id from users WHERE username = ?"
+        result = cursor.execute(query, (username,)).fetchone()
+    
+    return result[0]
