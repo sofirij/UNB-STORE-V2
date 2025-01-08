@@ -27,14 +27,17 @@ def usernameExists(username):
     return result[0] > 0
 
 def loginUser(username, password):
-    """Provide a session id to the user"""
-    if not usernameExists(username):
-        return False
-    
-    # get password for the username
+    """Determine where to provide a session id to the user"""
     with sqlite3.connect("app.db") as conn:
         cursor = conn.cursor()
-        query = "S"
+        query = "SELECT password_hash FROM users WHERE username = ?"
+        result = cursor.execute(query, (username,)).fetchone()
         
-        
-    if not check_password_hash(passwordHash, password)
+    if result is None:
+        return False  # Username doesn't exist
+
+    passwordHash = result[0]
+    return check_password_hash(passwordHash, password)
+
+
+def getId

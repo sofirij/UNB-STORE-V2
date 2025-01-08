@@ -111,14 +111,8 @@ function validateAllInput() {
     }
 }
 
-function checkUsername(e) {
-    e.preventDefault();
-    console.log("It submitted");
-
-    let username = document.getElementById("username").value;
-    let password = document.getElementById("first-password").value;
-
-    fetch("/checkRegisterUsername", {
+function registerUser(username, password) {
+    fetch("/registerUser", {
         method: "POST",
         headers: {
             "Content-Type": "application/json"
@@ -135,20 +129,11 @@ function checkUsername(e) {
         return response.json();
     })
     .then(data => {
-        if (data.exists) {
-            alert("Username is already in use");
+        if (data.successful) {
+            loginUser()
         }
-        else {
-            fetch("/login", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json"
-                },
-                body: JSON.stringify({
-                    username: username,
-                    password: password
-                })
-            })
+        else { 
+            alert("Username is already in use");
         }
     })
     .catch(error => {
@@ -157,11 +142,47 @@ function checkUsername(e) {
     });
 }
 
+function loginUser() {
+    fetch("/login", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+            username: username,
+            password: password
+        })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            return response.json();
+        })
+        .then(data => {
+            if (data.successful) {
+                
+            }
+            else {
+                alert("Username or password is incorrect!");
+            }
+        })
+    })
+}
+
+function checkUsername(e) {
+    e.preventDefault();
+    console.log("It submitted");
+
+    let username = document.getElementById("username").value;
+    let password = document.getElementById("first-password").value;
+
+    registerUser(username, password);
+}
+
 
 usernameInput.addEventListener('input', validateAllInput);
 firstPasswordInput.addEventListener('input', validateAllInput);
 secondPasswordInput.addEventListener('input', validateAllInput);
-
 submitForm.addEventListener('submit', checkUsername);
 
 

@@ -3,6 +3,7 @@ from flask_session import Session
 from helpers import login_required
 from dotenv import load_dotenv
 from datetime import timedelta
+from functions import registerUsername, usernameExists, loginUser, getUserId
 import os
 import sqlite3
 
@@ -32,15 +33,9 @@ def after_request(response):
     response.headers["Pragma"] = "no-cache"
     return response
 
-@app.route("/register", methods=["GET", "POST"])
+@app.route("/register", methods=["GET"])
 def register():
-    """Allow new users to register to the database"""
-    if request.method == "POST":
-        username = request.form.get("username")
-        firstPassword = request.form.get("first-password")
-        secondPassword = request.form.get("second-password")
-        
-        
+    """Display the registration form for users to input information"""
     return render_template("register.html")
 
 @app.route("/login", methods=["POST"])
@@ -49,33 +44,24 @@ def login():
     data = request.get_json()
     username = data.get('username')
     password = data.get('password')
-    
-    
-    return render_template("login.html")
+    if loginUser(username, password):
+        session["user_id"]
+        return jsonify({"successful": True})
+    else:
+        return jsonify({"successful": False})
 
-@app.route("/checkRegisterUsername", methods=["POST"])
-def checkRegisterUsername():
-    """"Validate that the registered username is not already in use"""
+@app.route("/registerUser", methods=["POST"])
+def registerUser():
+    """"Validate that the registered username is not already in use and register the user"""
     data = request.get_json()
     username = data.get('username')
     password = data.get('password')
     
-    if usernameExists(username):
-        return jsonify({'exists': True})
+    if registerUsername(username, password):
+        return jsonify({"successful": True})
     else:
-        # register user to the db
-        with sqlite3.connect("app.db") as conn:
-            cursor = conn.cursor()
-            query = "INSERT INTO users (username, password_hash, is_active, is_admin) VALUES (?, ?, 1, 0)"
-            cursor.execute(query, (username, generate_password_hash(password)))
-            conn.commit()
-            #session["user_id"] = cursor.execute(query, (username,)).fetchall()[0][0]
-            
-        return jsonify({'exists': False})
+        return jsonify({"successful": False})
 
-
-    
-    
 
 if __name__ == "__main__":
     app.run(debug=True, host='0.0.0.0', port=5000)
