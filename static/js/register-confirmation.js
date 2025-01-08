@@ -116,13 +116,17 @@ function checkUsername(e) {
     console.log("It submitted");
 
     let username = document.getElementById("username").value;
+    let password = document.getElementById("first-password").value;
 
     fetch("/checkRegisterUsername", {
         method: "POST",
         headers: {
             "Content-Type": "application/json"
         },
-        body: JSON.stringify({username: username})
+        body: JSON.stringify({
+            username: username,
+            password: password
+        })
     })
     .then(response => {
         if (!response.ok) {
@@ -135,7 +139,16 @@ function checkUsername(e) {
             alert("Username is already in use");
         }
         else {
-            alert("Username is available");
+            fetch("/login", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    username: username,
+                    password: password
+                })
+            })
         }
     })
     .catch(error => {

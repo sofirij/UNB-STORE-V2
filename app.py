@@ -1,8 +1,8 @@
 from flask import Flask, redirect, render_template, request, session, jsonify
 from flask_session import Session
-from werkzeug.security import check_password_hash, generate_password_hash
 from helpers import login_required
 from dotenv import load_dotenv
+from datetime import timedelta
 import os
 import sqlite3
 
@@ -43,34 +43,39 @@ def register():
         
     return render_template("register.html")
 
-@app.route("/login", methods=["GET", "POST"])
+@app.route("/login", methods=["POST"])
 def login():
     """Allow already registered users to login to their account"""
+    data = request.get_json()
+    username = data.get('username')
+    password = data.get('password')
+    
     
     return render_template("login.html")
 
 @app.route("/checkRegisterUsername", methods=["POST"])
 def checkRegisterUsername():
     """"Validate that the registered username is not already in use"""
-    print("Something happened")
     data = request.get_json()
     username = data.get('username')
+    password = data.get('password')
     
-    with sqlite3.connect("app.db") as conn:
-        cursor = conn.cursor()
-        query = "SELECT username FROM users"
-        users = cursor.execute(query).fetchall()
-    
-    usernames = [row[0] for row in users]
-    if username in usernames:
+    if usernameExists(username):
         return jsonify({'exists': True})
     else:
-        # register the user to the db
+        # register user to the db
         with sqlite3.connect("app.db") as conn:
             cursor = conn.cursor()
-            query = "INSERT INTO users (username, password_hash, is_active, is_admin) VALUES ()"
-            cursor.execute(query)
+            query = "INSERT INTO users (username, password_hash, is_active, is_admin) VALUES (?, ?, 1, 0)"
+            cursor.execute(query, (username, generate_password_hash(password)))
+            conn.commit()
+            #session["user_id"] = cursor.execute(query, (username,)).fetchall()[0][0]
+            
         return jsonify({'exists': False})
+
+
+    
+    
 
 if __name__ == "__main__":
     app.run(debug=True, host='0.0.0.0', port=5000)
