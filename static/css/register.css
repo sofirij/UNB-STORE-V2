@@ -12,10 +12,6 @@
     margin-top: 4px;
 }
 
-.submit-button {
-    color: grey; 
-}
-
 .checkmark::after {
     display: inline-block;
     width: 20px;

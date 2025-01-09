@@ -5,7 +5,6 @@ from dotenv import load_dotenv
 from datetime import timedelta
 from functions import *
 import os
-import sqlite3
 
 load_dotenv()
 
@@ -20,8 +19,8 @@ app.config["SESSION_TYPE"] = "filesystem"
 # set the session lifetime
 app.permanent_session_lifetime = timedelta(minutes=10)
 
+# create session
 Session(app)
-
 
 @app.route("/", methods=["GET", "POST"])
 @login_required

@@ -2,6 +2,30 @@
 
 {% block title %} login {% endblock %}
 
+{% block link %} 
+    <link href="{{ url_for('static', filename='css/register.css')}}" rel="stylesheet">
+{% endblock %}
+
 {% block main %}
-    This is the login page
+    <div class="mb-3 register-container">
+        <form action="/login" method="post" id="login-form">
+            <fieldset>
+                <div class="mb-3">
+                    <input autocomplete="off" autofocus class="form-control mx-auto w-auto" id="username" name="username" placeholder="Username" type="text">   
+                </div>
+
+                <div class="mb-3">
+                    <input class="form-control mx-auto w-auto" name="password" id="password" placeholder="Password" type="password">
+                </div>
+            </fieldset>
+
+            <div class="mb-3">
+                <input class="form-control mx-auto w-auto submit-button" id="submit" type="submit" value="Login">
+            </div>
+        </form>
+    </div>
+{% endblock %}
+
+{% block script %}
+    src="{{ url_for('static', filename='js/login.js') }}"
 {% endblock %}

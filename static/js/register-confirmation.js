@@ -5,7 +5,8 @@ const secondPasswordInput = document.getElementById("second-password");
 const submitForm = document.getElementById("register-form");
 const submitButton = document.getElementById("submit");
 
-function validateMatch(firstPassword, secondPassword) {
+function validateMatch(firstPassword, secondPassword) 
+{
     if (firstPassword !== secondPassword)
     {
         isValid = false;
@@ -130,7 +131,7 @@ function registerUser(username, password) {
     })
     .then(data => {
         if (data.successful) {
-            loginUser()
+            loginUser(username, password);
         }
         else { 
             alert("Username is already in use");
@@ -188,6 +189,7 @@ usernameInput.addEventListener('input', validateAllInput);
 firstPasswordInput.addEventListener('input', validateAllInput);
 secondPasswordInput.addEventListener('input', validateAllInput);
 submitForm.addEventListener('submit', checkUsername);
+
 
 
 
