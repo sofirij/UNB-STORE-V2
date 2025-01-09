@@ -18,9 +18,9 @@ Note: All environment variables are deliberately made public for development. In
 
     ## Specifications for the register page
         You provide your 'username', 'first password' and 'second password'.
-        When the 'register' button is clicked the javascript will confirm that the information is valid.
-        If the information provided is valid you will be taken to the index page else the page will not be reloaded but you will be shown where the problem lies.
-        If the username is already in use you will be alerted and all info will be reset.
+        You are not allowed to submit the information until it has met the listed out requirements.
+        When requirements are meet and the information is submitted it will be validated with the users table that the username does not already exist.
+        If the username already exists feedback will the given to the user without reloading the page otherwise they are taken to the index page.
 
         ### Specifications for the input parameters
             #### Specification for the username
@@ -38,4 +38,4 @@ Note: All environment variables are deliberately made public for development. In
 
     ## Specifications for the login page
         You provide your already registered 'username' and 'password'
-        If the information is not valid the information is cleared and you are to re-enter the information else you are logged in and taken to the homepage
+        If the information is not valid feedback will be given to the user without reloading the page and you are to re-enter the information else you are logged in and taken to the homepage
