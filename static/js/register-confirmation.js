@@ -108,7 +108,10 @@ function validateAllInput() {
     if (isValid)
     {
         submitButton.disabled = false;
-        submitButton.style.backgroundColor = "#f4f4f4";
+    }
+    else
+    {
+        submitButton.disabled = true;
     }
 }
 

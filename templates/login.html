@@ -11,11 +11,11 @@
         <form action="/login" method="post" id="login-form">
             <fieldset>
                 <div class="mb-3">
-                    <input autocomplete="off" autofocus class="form-control mx-auto w-auto" id="username" name="username" placeholder="Username" type="text">   
+                    <input autocomplete="off" required autofocus class="form-control mx-auto w-auto" id="username" name="username" placeholder="Username" type="text">   
                 </div>
 
                 <div class="mb-3">
-                    <input class="form-control mx-auto w-auto" name="password" id="password" placeholder="Password" type="password">
+                    <input class="form-control mx-auto w-auto" required  name="password" id="password" autocomplete="current-password"  placeholder="Password" type="password">
                 </div>
             </fieldset>
 

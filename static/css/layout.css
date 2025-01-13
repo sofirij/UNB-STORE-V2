@@ -1,4 +1,4 @@
-body {
+body, html {
     background-color: #f4f4f4;
     margin: 0;
     padding: 0;
@@ -10,3 +10,38 @@ body {
     min-height: 100vh;
 }
 
+/* Sidebar styling */
+.sidebar {
+    position: fixed;
+    top: 0;
+    right: -300px; /* Hidden off-screen initially */
+    width: 300px;
+    height: 100%;
+    background-color: #444;
+    color: white;
+    padding: 20px;
+    box-shadow: -2px 0 5px rgba(0, 0, 0, 0.5);
+    transition: right 0.3s ease-in-out; /* Smooth slide animation */
+}
+
+.sidebar.open {
+    right: 0;
+}
+
+  /* Close button */
+#close-btn {
+    background: none;
+    border: none;
+    color: white;
+    font-size: 24px;
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    cursor: pointer;
+  }
+
+#option-btn {
+    background-color: inherit;
+    border: none;
+  }
+  

@@ -25,30 +25,40 @@
                     <span class="navbar-toggler-icon"></span>
                 </button>
                 <div class="collapse navbar-collapse" id="navbar">
-                    {% if session["user_id"] %}
-                        <ul class="navbar-nav me-auto mt-2">
-                            <li class="nav-item"><a class="nav-link" href="/inventory">Inventory</a></li>   
-                        </ul>
+                    {% if session["user_id"] %}                
                         <ul class="navbar-nav ms-auto mt-2">
-                            <li class="nav-item"><a class="nav-link" href="/profile">Profile</a></li>
-                        </ul>
-                        <ul class="navbar-nav ms-auto mt-2">
-                            <li class="nav-item"><a class="nav-link" href="/logout">Log out</a></li>
+                            <li class="nav-item"><button id="option-btn">Options</button></li>
                         </ul>
                     {% else %}
                         <ul class="navbar-nav ms-auto mt-2">
-                            <li class="nav-item"><a class="nav-link action=" href="/register">Register</a></li>
+                            <li class="nav-item"><a class="nav-link" href="/register">Register</a></li>
                             <li class="nav-item"><a class="nav-link" href="/login">Log In</a></li>
                         </ul>
                     {% endif %}
                 </div>
             </div>
         </nav>
+        
+        {% if session["user_id"] %}
+            <div class="sidebar" id="sidebar">
+                <button id="close-btn">&times;</button>
+                <ul class="navbar-nav ms-auto mt-2">
+                    <li class="nav-item"><a class="nav-link" href="/profile">Profile</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/inventory">Inventory</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/logout">Log out</a></li>
+                </ul>
+            </div>
+        {% endif %}
 
         <main>
             {% block main %}{% endblock %}
         </main>
+
         
+        
+        {% if session["user_id"] %}
+            <script src="{{ url_for('static', filename='js/main.js') }}">
+        {% endif %}
         <script {% block script %}{% endblock %}>
             
         </script>

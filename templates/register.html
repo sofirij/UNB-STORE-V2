@@ -11,7 +11,7 @@
         <form action="/register" method="post" id="register-form">
             <fieldset>
                 <div class="mb-3">
-                    <input autocomplete="off" autofocus class="form-control mx-auto w-auto" id="username" name="username" placeholder="Username" type="text">   
+                    <input autocomplete="off" required  autofocus class="form-control mx-auto w-auto" id="username" name="username" placeholder="Username" type="text">   
                 </div>
                 <div class="mb-3">
                     <small>
@@ -24,7 +24,7 @@
                 </div>
 
                 <div class="mb-3">
-                    <input class="form-control mx-auto w-auto" name="first-password" id="first-password" placeholder="Password" type="password">
+                    <input class="form-control mx-auto w-auto" required  name="first-password" id="first-password" placeholder="Password" autocomplete="current-password" type="password">
                 </div>
                 <div class="mb-3">
                     <small>
@@ -40,7 +40,7 @@
                 </div>
 
                 <div class="mb-3">
-                    <input class="form-control mx-auto w-auto submit" name="second-password" id="second-password" placeholder="Confirm Password" type="password">
+                    <input class="form-control mx-auto w-auto" required  name="second-password" id="second-password" autocomplete="current-password"  placeholder="Confirm Password" type="password">
                 </div>
             </fieldset>
 

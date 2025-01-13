@@ -76,9 +76,16 @@ def logout():
     return redirect("/")
 
 @app.route("/profile", methods=["GET"])
+@login_required
 def profile():
     """"Allow users to manage information about their profile"""
     return render_template("profile.html")
+
+@app.route("/inventory", methods=["GET"])
+@login_required
+def inventory():
+    """"Display the inventory of the user and allow the user to edit their inventory"""
+    return render_template("inventory.html")
 
 if __name__ == "__main__":
     app.run(debug=True, host='0.0.0.0', port=5000)
