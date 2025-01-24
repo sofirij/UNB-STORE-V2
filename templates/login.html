@@ -16,6 +16,7 @@
 
                 <div class="mb-3">
                     <input class="form-control mx-auto w-auto" required  name="password" id="password" autocomplete="current-password"  placeholder="Password" type="password">
+                    <label for="toggle-password"> <input type="checkbox" id="toggle-password"> Show Password</label>
                 </div>
             </fieldset>
 
@@ -27,5 +28,6 @@
 {% endblock %}
 
 {% block script %}
-    src="{{ url_for('static', filename='js/login.js') }}"
+    <script src="{{ url_for('static', filename='js/validation.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/login.js') }}"></script>
 {% endblock %}

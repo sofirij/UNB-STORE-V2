@@ -11,36 +11,42 @@
         <form action="/register" method="post" id="register-form">
             <fieldset>
                 <div class="mb-3">
+                    <input autocomplete="off" required  autofocus class="form-control mx-auto w-auto" id="display-name" name="display-name" placeholder="Display name" type="text">   
+                </div>
+
+                <div class="mb-3">
                     <input autocomplete="off" required  autofocus class="form-control mx-auto w-auto" id="username" name="username" placeholder="Username" type="text">   
                 </div>
                 <div class="mb-3">
-                    <small>
+                    <span class="requirements-text">
                         Requirements:
                         <ul>
-                            <li>Only letters and digts(A-Z, a-z, 0-9)<span class="checkmark" id="check1"></span></li>
-                            <li>Minimium 12 characters<span class="checkmark" id="check2"></span></li>
+                            <li>Only letters and digts(A-Z, a-z, 0-9)<span class="checkmark requirements-text" id="check1"></span></li>
+                            <li>Minimium 12 characters<span class="checkmark requirements-text" id="check2"></span></li>
                         </ul>
-                    </small>
+                    </span>
                 </div>
 
                 <div class="mb-3">
                     <input class="form-control mx-auto w-auto" required  name="first-password" id="first-password" placeholder="Password" autocomplete="current-password" type="password">
+                    <label for="toggle-first-password"> <input type="checkbox" id="toggle-first-password"> Show Password</label>
                 </div>
                 <div class="mb-3">
-                    <small>
+                    <span class="requirements-text">
                         Requirements:
                         <ul>
-                            <li>At least one uppercase<span class="checkmark" id="check3"></span></li>
-                            <li>At least one lowercase<span class="checkmark" id="check4"></span></li>
-                            <li>At least one digit<span class="checkmark" id="check5"></span></li>
+                            <li>At least one uppercase<span class="checkmark requirements-text" id="check3"></span></li>
+                            <li>At least one lowercase<span class="checkmark requirements-text" id="check4"></span></li>
+                            <li>At least one digit<span class="checkmark requirements-text" id="check5"></span></li>
                             <li>No spaces or special characters allowed<span class="checkmark" id="check6"></span></li>
-                            <li>Minimium 12 characters<span class="checkmark" id="check7"></span></li>
+                            <li>Minimium 12 characters<span class="checkmark requirements-text" id="check7"></span></li>
                         </ul>
-                    </small>
+                    </span>
                 </div>
 
                 <div class="mb-3">
                     <input class="form-control mx-auto w-auto" required  name="second-password" id="second-password" autocomplete="current-password"  placeholder="Confirm Password" type="password">
+                    <label for="toggle-second-password"> <input type="checkbox" id="toggle-second-password"> Show Password</label>
                 </div>
             </fieldset>
 
@@ -53,5 +59,6 @@
 {% endblock %}
 
 {% block script %}
-    src="{{ url_for('static', filename='js/register-confirmation.js') }}"
+    <script src="{{ url_for('static', filename='js/validation.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/register.js') }}"></script>
 {% endblock %}

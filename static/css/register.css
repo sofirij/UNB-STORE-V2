@@ -36,3 +36,8 @@
     color: white;
     content: '✖';
 }
+
+.requirements-text {
+    font-size: 10px;
+    font-family: Arial, sans-serif;
+}

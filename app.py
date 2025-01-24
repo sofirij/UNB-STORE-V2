@@ -63,8 +63,9 @@ def registerUser():
     data = request.get_json()
     username = data.get('username')
     password = data.get('password')
+    displayName = data.get('displayName')
     
-    if registerUsername(username, password):
+    if registerUsername(username, password, displayName):
         return jsonify({"successful": True})
     else:
         return jsonify({"successful": False})

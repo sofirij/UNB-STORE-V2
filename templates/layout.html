@@ -59,8 +59,7 @@
         {% if session["user_id"] %}
             <script src="{{ url_for('static', filename='js/main.js') }}">
         {% endif %}
-        <script {% block script %}{% endblock %}>
-            
-        </script>
+        
+        {% block script %}{% endblock %}
     </body>
 </html>
