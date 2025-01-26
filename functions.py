@@ -1,9 +1,13 @@
 import sqlite3
 from werkzeug.security import check_password_hash, generate_password_hash
 from flask import url_for
+import re
 
 def registerUsername(username, password, displayName):
     """"Register new user to the database"""
+    if not validateUsername(username) or not validatePassword(password):
+        return False
+    
     if usernameExists(username):
         return False
 
@@ -39,6 +43,9 @@ def usernameExists(username):
 
 def loginUser(username, password):
     """Determine where to provide a session id to the user"""
+    if not validateUsername(username) or not validatePassword(password):
+        return False
+    
     with sqlite3.connect("app.db") as conn:
         cursor = conn.cursor()
         query = "SELECT password_hash FROM users WHERE username = ?"
@@ -70,3 +77,38 @@ def displayNameExists(displayName):
         result = cursor.fetchone()
     
     return result[0] > 0
+
+def validateUsername(username):
+    """Check if the username is valid"""
+    minLength = 12
+    pattern = re.compile(r'^[A-Za-z0-9]+$')
+    
+    if not pattern.match(username):
+        return False
+    
+    if len(username) < minLength:
+        return False
+    
+    return True
+
+def validatePassword(password):
+    """Check if the password is valid"""
+    invalids = []
+    minLength = 12
+    
+    if len(password) < minLength:
+        return False
+    
+    if not re.search(r'[A-Z]', password):
+        return False
+    
+    if not re.search(r'[a-z]', password):
+        return False
+    
+    if not re.search(r'[0-9]', password):
+        return False
+    
+    if re.search(r'[\W_]', password):
+        return False
+    
+    return True
