@@ -1,10 +1,10 @@
 // Get references to elements
-const profileBtn = document.getElementById('option-btn');
+const profilePic = document.getElementById('profile-pic');
 const sidebar = document.getElementById('sidebar');
 const closeBtn = document.getElementById('close-btn');
 
 // Show the sidebar when profile button is clicked
-profileBtn.addEventListener('click', () => {
+profilePic.addEventListener('click', () => {
   sidebar.classList.add('open');
   console.log("Sidebar was opened");
 });

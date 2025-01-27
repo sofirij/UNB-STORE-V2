@@ -51,6 +51,8 @@ def login():
         
         if loginUser(username, password):
             session["user_id"] = getUserId(username)
+            session["display_name"] = getDisplayName(username)
+            session["profile_pic"] = getProfilePic(username)
             return jsonify({"successful": True})
         else:
             return jsonify({"successful": False})

@@ -27,7 +27,9 @@
                 <div class="collapse navbar-collapse" id="navbar">
                     {% if session["user_id"] %}                
                         <ul class="navbar-nav ms-auto mt-2">
-                            <li class="nav-item"><button id="option-btn">Options</button></li>
+                            <li class="nav-item">
+                                <img src="/static/profile-pics/{{ session['profile_pic'] }}.png" id="profile-pic" class="rounded-circle" alt="Profile Picture">
+                            </li>
                         </ul>
                     {% else %}
                         <ul class="navbar-nav ms-auto mt-2">
@@ -41,10 +43,14 @@
         
         {% if session["user_id"] %}
             <div class="sidebar" id="sidebar">
-                <button id="close-btn">&times;</button>
+                <div class="d-flex justify-content-between align-items-center">
+                    <span class="display-name">{{ session["display_name"] }}</span>
+                    <button id="close-btn" class="btn btn-link">&times;</button>
+                </div>
                 <ul class="navbar-nav ms-auto mt-2">
                     <li class="nav-item"><a class="nav-link" href="/profile">Profile</a></li>
                     <li class="nav-item"><a class="nav-link" href="/inventory">Inventory</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/messages">Messages</a></li>
                     <li class="nav-item"><a class="nav-link" href="/logout">Log out</a></li>
                 </ul>
             </div>
@@ -57,9 +63,9 @@
         
         
         {% if session["user_id"] %}
-            <script src="{{ url_for('static', filename='js/main.js') }}">
+            <script src="{{ url_for('static', filename='js/main.js') }}"></script>
         {% endif %}
-        
+
         {% block script %}{% endblock %}
     </body>
 </html>

@@ -24,8 +24,8 @@ def registerUsername(username, password, displayName):
     # add user profile pic path to the database
     with sqlite3.connect("app.db") as conn:
         cursor = conn.cursor()
-        query = "INSERT INTO profile_pics (user_id, path) VALUES (?, ?)"
-        cursor.execute(query, (getUserId(username), url_for('static', filename='profile-pics/default.png')))
+        query = "INSERT INTO profile_pics (user_id, filename) VALUES (?, 'default')"
+        cursor.execute(query, (getUserId(username),))
         conn.commit()
         
     return True
@@ -112,3 +112,21 @@ def validatePassword(password):
         return False
     
     return True
+
+def getDisplayName(username):
+    """Get the display name for the specified username"""
+    with sqlite3.connect("app.db") as conn:
+        cursor = conn.cursor()
+        query = "SELECT display_name FROM users WHERE username = ?"
+        result = cursor.execute(query, (username,)).fetchone()
+    
+    return result[0]
+
+def getProfilePic(username):
+    """Get the profile pic path for the specified username"""
+    with sqlite3.connect("app.db") as conn:
+        cursor = conn.cursor()
+        query = "SELECT filename FROM profile_pics WHERE user_id = ?"
+        result = cursor.execute(query, (getUserId(username),)).fetchone()
+    
+    return result[0]
