@@ -74,7 +74,7 @@ function registerUser(username, password, displayName) {
             loginUser(username, password);
         }
         else { 
-            alert("Username is already in use");
+            alert(data.invalids[0]);
         }
     })
     .catch(error => {

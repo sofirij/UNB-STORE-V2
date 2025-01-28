@@ -67,10 +67,12 @@ def registerUser():
     password = data.get('password')
     displayName = data.get('displayName')
     
-    if registerUsername(username, password, displayName):
+    invalids = registerUsername(username, password, displayName)
+    
+    if not invalids:
         return jsonify({"successful": True})
     else:
-        return jsonify({"successful": False})
+        return jsonify({"successful": False, "invalids": invalids})
 
 @app.route("/logout", methods=["GET"])
 def logout():

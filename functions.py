@@ -5,14 +5,15 @@ import re
 
 def registerUsername(username, password, displayName):
     """"Register new user to the database"""
+    invalids = []
     if not validateUsername(username) or not validatePassword(password):
-        return False
+        invalids.append("Invalid username or password")
     
     if usernameExists(username):
-        return False
+        invalids.append("Username already exists")
 
     if displayNameExists(displayName):
-        return False
+        invalids.append("Display name already exists")
     
     # register user to the db
     with sqlite3.connect("app.db") as conn:
@@ -28,7 +29,7 @@ def registerUsername(username, password, displayName):
         cursor.execute(query, (getUserId(username),))
         conn.commit()
         
-    return True
+    return invalids
     
 def usernameExists(username):
     """"Check if the provided username already exists in the database"""
