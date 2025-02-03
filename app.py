@@ -92,5 +92,21 @@ def inventory():
     """"Display the inventory of the user and allow the user to edit their inventory"""
     return render_template("inventory.html")
 
+@app.route("/inventory/update", methods=["POST"])
+@login_required
+def updateInventory():
+    """"Update the inventory of the user"""
+    data = request.get_json()
+    item_id = data.get('item_id')
+    category = data.get('category')
+    item_filename = data.get('item_filename')
+    price = data.get('price')
+    description = data.get('description')
+    name = data.get('name')
+    quantity = data.get('quantity')
+    
+    updateInventory(item_id, category, item_filename, name, price, quantity, description)
+    return jsonify({"successful": True})
+
 if __name__ == "__main__":
-    app.run(debug=True, host='0.0.0.0', port=5000)
+    app.run(debug=True, host='0.0.0.0', port=5000)  

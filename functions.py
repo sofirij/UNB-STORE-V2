@@ -2,18 +2,22 @@ import sqlite3
 from werkzeug.security import check_password_hash, generate_password_hash
 from flask import url_for
 import re
+import os
 
 def registerUsername(username, password, displayName):
     """"Register new user to the database"""
     invalids = []
     if not validateUsername(username) or not validatePassword(password):
         invalids.append("Invalid username or password")
+        return invalids
     
     if usernameExists(username):
         invalids.append("Username already exists")
+        return invalids
 
     if displayNameExists(displayName):
         invalids.append("Display name already exists")
+        return invalids
     
     # register user to the db
     with sqlite3.connect("app.db") as conn:
@@ -28,6 +32,18 @@ def registerUsername(username, password, displayName):
         query = "INSERT INTO profile_pics (user_id, filename) VALUES (?, 'default')"
         cursor.execute(query, (getUserId(username),))
         conn.commit()
+        
+    # add user to the inventory database
+    with sqlite3.connect("app.db") as conn:
+        cursor = conn.cursor()
+        query = "INSERT INTO inventory (user_id) VALUES (?)"
+        cursor.execute(query, (getUserId(username),))
+        conn.commit()
+    
+    # create user-specific inventory folder
+    user_id = getUserId(username)
+    user_folder = os.path.join("static", "inventory-pics", f"user_{user_id}")
+    os.makedirs(user_folder, exist_ok=True)
         
     return invalids
     
@@ -131,3 +147,14 @@ def getProfilePic(username):
         result = cursor.execute(query, (getUserId(username),)).fetchone()
     
     return result[0]
+
+def updateInventory(item_id, category, item_filename, name, price, quantity, description):
+    """Update the inventory of the user"""
+    if not item_filename:
+        item_filename = "default"
+    
+    with sqlite3.connect("app.db") as conn:
+        cursor = conn.cursor()
+        query = "UPDATE inventory SET category = ?, item_filename = ?, name = ?, price = ?, quantity = ?, description = ? WHERE item_id = ?"
+        cursor.execute(query, (category, item_filename, name, price, quantity, description, item_id))
+        conn.commit()
