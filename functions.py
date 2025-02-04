@@ -1,8 +1,12 @@
 import sqlite3
 from werkzeug.security import check_password_hash, generate_password_hash
 from flask import url_for
+import json
 import re
 import os
+
+# List of valid inventory filenames
+INVENTORY_FILENAMES = ["books-and-study-materials", "clothing-and-accessories", "electronics-and-gadgets", "furniture-and-home-essentials", "miscellaneous", "services", "sports-and-fitness", "transportation-and-mobility"]
 
 def registerUsername(username, password, displayName):
     """"Register new user to the database"""
@@ -32,17 +36,10 @@ def registerUsername(username, password, displayName):
         query = "INSERT INTO profile_pics (user_id, filename) VALUES (?, 'default')"
         cursor.execute(query, (getUserId(username),))
         conn.commit()
-        
-    # add user to the inventory database
-    with sqlite3.connect("app.db") as conn:
-        cursor = conn.cursor()
-        query = "INSERT INTO inventory (user_id) VALUES (?)"
-        cursor.execute(query, (getUserId(username),))
-        conn.commit()
     
     # create user-specific inventory folder
     user_id = getUserId(username)
-    user_folder = os.path.join("static", "inventory-pics", f"user_{user_id}")
+    user_folder = os.path.join("static", "inventory-pics", f"user-{user_id}")
     os.makedirs(user_folder, exist_ok=True)
         
     return invalids
@@ -150,11 +147,54 @@ def getProfilePic(username):
 
 def updateInventory(item_id, category, item_filename, name, price, quantity, description):
     """Update the inventory of the user"""
-    if not item_filename:
-        item_filename = "default"
+    item_data = json.dumps({
+        "item_id": item_id,
+        "category": category,
+        "item_filename": item_filename,
+        "name": name,
+        "price": price,
+        "quantity": quantity,
+        "description": description
+    })
     
     with sqlite3.connect("app.db") as conn:
         cursor = conn.cursor()
-        query = "UPDATE inventory SET category = ?, item_filename = ?, name = ?, price = ?, quantity = ?, description = ? WHERE item_id = ?"
-        cursor.execute(query, (category, item_filename, name, price, quantity, description, item_id))
+        query = "UPDATE inventory SET item_data = ? WHERE item_id = ?"
+        cursor.execute(query, (item_data, item_id))
+        conn.commit()
+        
+def getUserInventory(user_id):
+    """Fetch inventory data for a specific user"""
+    with sqlite3.connect("app.db") as conn:
+        cursor = conn.cursor()
+        query = "SELECT item_data FROM inventory WHERE user_id = ? and expired = 0"
+        cursor.execute(query, (user_id,))
+        result = cursor.fetchall()
+    
+    inventory_list = [json.loads(item[0]) for item in result]
+    return inventory_list
+
+def deleteInventory(item_id):
+    """"Mark item as expired in the database"""
+    with sqlite3.connect("app.db") as conn:
+        cursor = conn.cursor()
+        query = "UPDATE inventory SET expired = 1 WHERE item_id = ?"
+        cursor.execute(query, (item_id,))
+        conn.commit()
+        
+def addInventory(category, item_filename, name, price, quantity, description, user_id):
+    """Add a new item to the inventory"""
+    item_data = json.dumps({
+        "category": category,
+        "item_filename": item_filename,
+        "name": name,
+        "price": price,
+        "quantity": quantity,
+        "description": description
+    })
+    
+    with sqlite3.connect("app.db") as conn:
+        cursor = conn.cursor()
+        query = "INSERT INTO inventory (user_id, item_data, expired) VALUES (?, ?, 0)"
+        cursor.execute(query, (user_id, item_data))
         conn.commit()

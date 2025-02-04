@@ -84,7 +84,9 @@ def logout():
 @login_required
 def profile():
     """"Allow users to manage information about their profile"""
-    return render_template("profile.html")
+    user_id = session["user_id"]
+    inventory = getUserInventory(user_id)
+    return render_template("profile.html", inventory=inventory)
 
 @app.route("/inventory", methods=["GET"])
 @login_required
@@ -106,6 +108,32 @@ def updateInventory():
     quantity = data.get('quantity')
     
     updateInventory(item_id, category, item_filename, name, price, quantity, description)
+    return jsonify({"successful": True})
+
+@app.route("/inventory/delete", methods=["POST"])
+@login_required
+def deleteInventory():
+    """"Delete an item from the inventory of the user"""
+    data = request.get_json()
+    item_id = data.get('item_id')
+    
+    deleteInventory(item_id)
+    return jsonify({"successful": True})
+
+@app.route("/inventory/add", methods=["POST"])
+@login_required
+def addInventory():
+    """"Add an item to the inventory of the user"""
+    data = request.get_json()
+    category = data.get('category')
+    item_filename = data.get('item_filename')
+    price = data.get('price')
+    description = data.get('description')
+    name = data.get('name')
+    quantity = data.get('quantity')
+    user_id = session["user_id"]
+    
+    addInventory(category, item_filename, name, price, quantity, description, user_id)
     return jsonify({"successful": True})
 
 if __name__ == "__main__":

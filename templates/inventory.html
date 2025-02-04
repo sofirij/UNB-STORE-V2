@@ -7,23 +7,29 @@
 {% endblock %}
 
 {% block main %}
-    <div class="item-container mb-3">
-        <div class="smth mb-3">
-            <select>
-                <option>Select something</option>
-            </select>
-        </div>
-        <div class="middle mb-3">
-            <div class="middle middle-image mb-3">
-                <img src="{{ url_for('static', filename='profile-pics/default.png')}}" alt="placeholder">
+    {% if inventory %}
+        {% for item in inventory %}
+            <div class="item-container mb-3">
+                <div class="smth mb-3">
+                    <select>
+                        <option>Select something</option>
+                    </select>
+                </div>
+                <div class="middle mb-3">
+                    <div class="middle middle-image mb-3">
+                        <img src="{{ url_for('static', filename='profile-pics/default.png')}}" alt="placeholder">
+                    </div>
+                    <div class="middle middle-info mb-3">
+                        <p>Info</p>
+                        <p>Info</p>
+                    </div>
+                    
+                </div>
+                <div class="smth mb-3">
+                </div>
             </div>
-            <div class="middle middle-info mb-3">
-                <p>Info</p>
-                <p>Info</p>
-            </div>
-            
-        </div>
-        <div class="smth mb-3">
-        </div>
-    </div>
+        {% endfor %}
+    {% else %}
+            <p>Add your first item</p>
+    {% endif %}
 {% endblock %}
