@@ -31,5 +31,51 @@
         {% endfor %}
     {% else %}
             <p>Add your first item</p>
+
+            <form id="inventory-form-new" action="/inventory/add" method="POST">
+                <div class="item-container mb-3">
+                    <div class="category-container mb-3">
+                        <select class="form-control mx-auto w-auto" id="categories" required>
+                            <option value="" disabled selected>Select item category</option>
+                            {% for filename in filenames %}
+                                <option value={{ filename }}>{{ filename }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="item-info mb-3">
+                        <div class="image-upload mb-3">
+                            <button type="button" id="upload-button" class="btn btn-primary">+</button>
+                            <button type="button" id="reset-button" class="btn btn-primary">-</button>
+                        </div>
+
+                        <div class="image-slide">
+                            <button type="button" id="left-arrow" class="btn btn-secondary">&lt;</button>
+                        </div>
+
+                        <div class="item-info-image mb-3">
+                            <img id="item-image-preview" src="{{ url_for('static', filename='profile-pics/default.png')}}" alt="placeholder" style="display: none; margin-top: 10px;">
+                            <input type="file" id="item-image" name="item-image" accept="image/*" style="display: none;" multiple>
+                        </div>
+
+                        <div class="image-slide">
+                            <button type="button" id="right-arrow" class="btn btn-secondary">&gt;</button>
+                        </div>
+                        
+                        <div class="item-info-text mb-3">
+                            <input class="form-control mx-auto w-auto" type="text" required id="item-name" name="item-name" placeholder="Item name">
+                            <input class="form-control mx-auto w-auto" type="number" required id="item-price" name="item-price" placeholder="Item price">
+                            <input class="form-control mx-auto w-auto" type="number" required id="item-quantity" name="item-quantity"  placeholder="Item quantity">
+                        </div>    
+                    </div>
+                    <div class="item-description mb-3">
+                        <label for="item-description">Description:</label>
+                        <textarea class="form-control mx-auto w-auto" id="item-description" name="item-description" rows="2" cols="50"></textarea>
+                    </div>
+                </div>
+            </form>
     {% endif %}
+{% endblock %}
+
+{% block script %}
+    <script src="{{ url_for('static', filename='js/inventory.js') }}"></script>
 {% endblock %}

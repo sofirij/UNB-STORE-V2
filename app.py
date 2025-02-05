@@ -17,10 +17,13 @@ app.config["SESSION PERMANENT"] = False
 app.config["SESSION_TYPE"] = "filesystem"
 
 # set the session lifetime
-app.permanent_session_lifetime = timedelta(minutes=10)
+app.permanent_session_lifetime = timedelta(minutes=60)
 
 # create session
 Session(app)
+
+# List of valid inventory filenames
+INVENTORY_FILENAMES = ["books-and-study-materials", "clothing-and-accessories", "electronics-and-gadgets", "furniture-and-home-essentials", "miscellaneous", "services", "sports-and-fitness", "transportation-and-mobility"]
 
 @app.route("/", methods=["GET", "POST"])
 @login_required
@@ -84,15 +87,15 @@ def logout():
 @login_required
 def profile():
     """"Allow users to manage information about their profile"""
-    user_id = session["user_id"]
-    inventory = getUserInventory(user_id)
-    return render_template("profile.html", inventory=inventory)
+    return render_template("profile.html")
 
 @app.route("/inventory", methods=["GET"])
 @login_required
 def inventory():
     """"Display the inventory of the user and allow the user to edit their inventory"""
-    return render_template("inventory.html")
+    user_id = session["user_id"]
+    inventory = getUserInventory(user_id)
+    return render_template("inventory.html", inventory=inventory, filenames=INVENTORY_FILENAMES)
 
 @app.route("/inventory/update", methods=["POST"])
 @login_required
