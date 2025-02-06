@@ -45,7 +45,7 @@
                     <div class="item-info mb-3">
                         <div class="image-upload mb-3">
                             <button type="button" id="upload-button" class="btn btn-primary">+</button>
-                            <button type="button" id="reset-button" class="btn btn-primary">-</button>
+                            <button type="button" id="remove-button" class="btn btn-primary">-</button>
                         </div>
 
                         <div class="image-slide">
@@ -53,7 +53,7 @@
                         </div>
 
                         <div class="item-info-image mb-3">
-                            <img id="item-image-preview" src="{{ url_for('static', filename='profile-pics/default.png')}}" alt="placeholder" style="display: none; margin-top: 10px;">
+                            <img id="item-image-preview" src="{{ url_for('static', filename='inventory-pics/default/no-image.png')}}" alt="placeholder" style="margin-top: 10px;">
                             <input type="file" id="item-image" name="item-image" accept="image/*" style="display: none;" multiple>
                         </div>
 
