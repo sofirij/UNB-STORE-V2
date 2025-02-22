@@ -4,9 +4,16 @@ from flask import url_for
 import json
 import re
 import os
+import uuid
+from PIL import Image
 
 # List of valid inventory filenames
 INVENTORY_FILENAMES = ["books-and-study-materials", "clothing-and-accessories", "electronics-and-gadgets", "furniture-and-home-essentials", "miscellaneous", "services", "sports-and-fitness", "transportation-and-mobility"]
+
+# List of valid image extensions
+ALLOWED_EXTENSIONS = ["jpg", "jpeg", "png", "gif"]
+
+MAX_FILE_SIZE = 10 * 1024 * 1024  # 10 MB
 
 def registerUsername(username, password, displayName):
     """"Register new user to the database"""
@@ -145,12 +152,11 @@ def getProfilePic(username):
     
     return result[0]
 
-def updateInventory(item_id, category, item_filename, name, price, quantity, description):
+def updateItemDetails(item_id, category, name, price, quantity, description, image_filenames):
     """Update the inventory of the user"""
     item_data = json.dumps({
-        "item_id": item_id,
         "category": category,
-        "item_filename": item_filename,
+        "image_filenames": image_filenames,
         "name": name,
         "price": price,
         "quantity": quantity,
@@ -182,19 +188,42 @@ def deleteInventory(item_id):
         cursor.execute(query, (item_id,))
         conn.commit()
         
-def addInventory(category, item_filename, name, price, quantity, description, user_id):
-    """Add a new item to the inventory"""
-    item_data = json.dumps({
-        "category": category,
-        "item_filename": item_filename,
-        "name": name,
-        "price": price,
-        "quantity": quantity,
-        "description": description
-    })
+def createFilenames(fileExtensions, indexes, item_Id):
+    """Create a list of filenames for the new files"""
+    filenames = []
+    for idx, ext in zip(indexes, fileExtensions):
+        filenames.append(f"{item_Id}-{uuid.uuid4()}-{idx}.{ext}")
     
+    return filenames
+
+def newItemToInventory(user_id):
+    """Insert a new user_id into the database and return the new item_id"""
     with sqlite3.connect("app.db") as conn:
         cursor = conn.cursor()
         query = "INSERT INTO inventory (user_id, item_data, expired) VALUES (?, ?, 0)"
-        cursor.execute(query, (user_id, item_data))
+        cursor.execute(query, (user_id, "{}"))
         conn.commit()
+    
+    with sqlite3.connect("app.db") as conn:
+        cursor = conn.cursor()
+        query = "SELECT item_id FROM inventory WHERE user_id = ? ORDER BY item_id DESC LIMIT 1"
+        result = cursor.execute(query, (user_id,)).fetchone()
+    
+    return result[0]
+
+def isImage(file):
+    """Check if the file is an image"""
+    try:
+        with Image.open(file) as img:
+            img.verify()
+            return True
+    except Exception:
+        return False
+    
+def isValidSize(file):
+    """Check if the file size is within the allowed limit"""
+    return file.content_length <= MAX_FILE_SIZE
+
+def isValidExtension(filename):
+    """Check if the file has an allowed extension"""
+    return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS

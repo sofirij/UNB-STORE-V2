@@ -22,9 +22,6 @@ app.permanent_session_lifetime = timedelta(minutes=60)
 # create session
 Session(app)
 
-# List of valid inventory filenames
-INVENTORY_FILENAMES = ["books-and-study-materials", "clothing-and-accessories", "electronics-and-gadgets", "furniture-and-home-essentials", "miscellaneous", "services", "sports-and-fitness", "transportation-and-mobility"]
-
 @app.route("/", methods=["GET", "POST"])
 @login_required
 def index():
@@ -97,7 +94,7 @@ def inventory():
     inventory = getUserInventory(user_id)
     return render_template("inventory.html", inventory=inventory, filenames=INVENTORY_FILENAMES)
 
-@app.route("/inventory/update", methods=["POST"])
+@app.route("/inventory/update/<int:item_id>", methods=["PUT"])
 @login_required
 def updateInventory():
     """"Update the inventory of the user"""
@@ -113,13 +110,10 @@ def updateInventory():
     updateInventory(item_id, category, item_filename, name, price, quantity, description)
     return jsonify({"successful": True})
 
-@app.route("/inventory/delete", methods=["POST"])
+@app.route("/inventory/delete/<int:item_id>", methods=["DELETE"])
 @login_required
-def deleteInventory():
-    """"Delete an item from the inventory of the user"""
-    data = request.get_json()
-    item_id = data.get('item_id')
-    
+def deleteInventory(item_id):
+    """"Delete an item from the inventory of the user"""  
     deleteInventory(item_id)
     return jsonify({"successful": True})
 
@@ -127,16 +121,46 @@ def deleteInventory():
 @login_required
 def addInventory():
     """"Add an item to the inventory of the user"""
-    data = request.get_json()
-    category = data.get('category')
-    item_filename = data.get('item_filename')
-    price = data.get('price')
-    description = data.get('description')
-    name = data.get('name')
-    quantity = data.get('quantity')
     user_id = session["user_id"]
+    category = request.form.get("categories-0")
+    name = request.form.get("item-name-0")
+    price = request.form.get("item-price-0")
+    quantity = request.form.get("item-quantity-0")
+    description = request.form.get("item-description-0")
+    indexes = request.form.getlist("indexes")
+    images = request.files.getlist("images")
+    fileExtensions = [image.filename.split('.')[-1] for image in images]
     
-    addInventory(category, item_filename, name, price, quantity, description, user_id)
+    # Validate files
+    for image in images:
+        if not isImage(image):
+            return jsonify({"successful": False, "message": "Please upload only images"})
+        if not isValidSize(image):
+            return jsonify({"successful": False, "message": "Please upload images less than 10MB"})
+        if not isValidExtension(image.filename):
+            return jsonify({"successful": False, "message": "Invalid file extension"})
+        
+    # Print the image size for debugging
+    for image in images:
+        image_size = len(image.read())
+        print(f"Received file: {image.filename}, size: {image_size} bytes")
+        image.seek(0)  # Reset file pointer to the beginning
+        
+    # Halt execution
+    return jsonify({"successful": True})
+    
+    # Insert a new user_id into the database and return the new item_id
+    item_id = newItemToInventory(user_id)
+    
+    # Then create a list of new filenames using the item_id and the index
+    image_filenames = createFilenames(fileExtensions, indexes, item_id)
+    
+    # Then update the info in that row with the new filenames and other item info 
+    updateItemDetails(item_id, category, name, price, quantity, description, image_filenames)
+    
+    # Store files in the file system
+    for image, filename in zip(images, image_filenames):
+        image.save(os.path.join('static', 'inventory-pics', f'user-{user_id}', filename))
     return jsonify({"successful": True})
 
 if __name__ == "__main__":

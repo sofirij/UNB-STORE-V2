@@ -9,33 +9,10 @@
 {% block main %}
     {% if inventory %}
         {% for item in inventory %}
-            <div class="item-container mb-3">
-                <div class="smth mb-3">
-                    <select>
-                        <option>Select something</option>
-                    </select>
-                </div>
-                <div class="middle mb-3">
-                    <div class="middle middle-image mb-3">
-                        <img src="{{ url_for('static', filename='profile-pics/default.png')}}" alt="placeholder">
-                    </div>
-                    <div class="middle middle-info mb-3">
-                        <p>Info</p>
-                        <p>Info</p>
-                    </div>
-                    
-                </div>
-                <div class="smth mb-3">
-                </div>
-            </div>
-        {% endfor %}
-    {% else %}
-            <p>Add your first item</p>
-
-            <form id="inventory-form-new" action="/inventory/add" method="POST">
+            <form id="inventory-form-{{ forloop.counter }}" action="/inventory/add" method="POST" data-db-item-id={{ item.item_id }}>
                 <div class="item-container mb-3">
                     <div class="category-container mb-3">
-                        <select class="form-control mx-auto w-auto" id="categories" required>
+                        <select class="form-control mx-auto w-auto" id="categories-{{ forloop.counter }}" name="categories-{{ forloop.counter }}" required disabled>
                             <option value="" disabled selected>Select item category</option>
                             {% for filename in filenames %}
                                 <option value={{ filename }}>{{ filename }}</option>
@@ -44,32 +21,90 @@
                     </div>
                     <div class="item-info mb-3">
                         <div class="image-upload mb-3">
-                            <button type="button" id="upload-button" class="btn btn-primary">+</button>
-                            <button type="button" id="remove-button" class="btn btn-primary">-</button>
+                            <button type="button" id="upload-button-{{ forloop.counter }}" class="btn btn-primary" disabled>+</button>
+                            <button type="button" id="remove-button-{{ forloop.counter }}" class="btn btn-primary" disabled>-</button>
                         </div>
 
                         <div class="image-slide">
-                            <button type="button" id="left-arrow" class="btn btn-secondary">&lt;</button>
+                            <button type="button" id="left-arrow-{{ forloop.counter }}" class="btn btn-secondary">&lt;</button>
                         </div>
 
                         <div class="item-info-image mb-3">
-                            <img id="item-image-preview" src="{{ url_for('static', filename='inventory-pics/default/no-image.png')}}" alt="placeholder" style="margin-top: 10px;">
-                            <input type="file" id="item-image" name="item-image" accept="image/*" style="display: none;" multiple>
+                            {% if item.images %}
+                                <img id="item-image-preview-{{ forloop.counter }}" src="{{ url_for('static', filename=item.images[0]) }}" alt="placeholder" style="margin-top: 10px;">
+                            {% else %}
+                                <img id="item-image-preview-{{ forloop.counter }}" src="{{ url_for('static', filename='inventory-pics/default/no-image.png') }}" alt="placeholder" style="margin-top: 10px;">
+                            {% endif %}
+                            <input type="file" id="item-image-{{ forloop.counter }}" name="item-image-{{ forloop.counter }}" accept="image/*" style="display: none;" multiple  disabled>
                         </div>
 
                         <div class="image-slide">
-                            <button type="button" id="right-arrow" class="btn btn-secondary">&gt;</button>
+                            <button type="button" id="right-arrow-{{ forloop.counter }}" class="btn btn-secondary" disabled>&gt;</button>
                         </div>
                         
                         <div class="item-info-text mb-3">
-                            <input class="form-control mx-auto w-auto" type="text" required id="item-name" name="item-name" placeholder="Item name">
-                            <input class="form-control mx-auto w-auto" type="number" required id="item-price" name="item-price" placeholder="Item price">
-                            <input class="form-control mx-auto w-auto" type="number" required id="item-quantity" name="item-quantity"  placeholder="Item quantity">
+                            <input class="form-control mx-auto w-auto" type="text" required id="item-name-{{ forloop.counter }}" name="item-name-{{ forloop.counter }}" placeholder disabled="Item name">
+                            <input class="form-control mx-auto w-auto" type="text" required id="item-price-{{ forloop.counter }}" name="item-price-{{ forloop.counter }}" placeholder disabled="Item price">
+                            <input class="form-control mx-auto w-auto" type="number" required id="item-quantity-{{ forloop.counter }}" name="item-quantity-{{ forloop.counter }}" placeholder disabled="Item quantity">
                         </div>    
                     </div>
                     <div class="item-description mb-3">
-                        <label for="item-description">Description:</label>
-                        <textarea class="form-control mx-auto w-auto" id="item-description" name="item-description" rows="2" cols="50"></textarea>
+                        <label for="item-description-{{ forloop.counter }}">Description:</label>
+                        <textarea class="form-control mx-auto w-auto" id="item-description-{{ forloop.counter }}" name="item-description-{{ forloop.counter }}" rows="2" cols="50" disabled></textarea>
+                    </div>
+                    <div class="options-container mb-3">
+                        <button id="edit-{{ forloop.counter }}" name="edit-{{ forloop.counter }}" type="button" class="btn btn-primary">Edit</button>
+                        <button id="delete-{{ forloop.counter }}" name="delete-{{ forloop.counter }}" type="button" class="btn btn-danger">Delete</button>
+                        <button id="save-{{ forloop.counter }}" name="save-{{ forloop.counter }}" type="button" class="btn btn-success" style="display: none;">Save</button>
+                        <button id="cancel-{{ forloop.counter }}" name="cancel-{{ forloop.counter }}" type="button" class="btn btn-secondary" style="display: none;">Cancel</button>
+                    </div>
+                </div>
+            </form>
+        {% endfor %}
+    {% else %}
+            <p>Add your first item</p>
+
+            <form id="inventory-form-0" action="/inventory/add" method="POST">
+                <div class="item-container mb-3">
+                    <div class="category-container mb-3">
+                        <select class="form-control mx-auto w-auto" id="categories-0" name="categories-0" required>
+                            <option value="" disabled selected>Select item category</option>
+                            {% for filename in filenames %}
+                                <option value={{ filename }}>{{ filename }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="item-info mb-3">
+                        <div class="image-upload mb-3">
+                            <button type="button" id="upload-button-0" class="btn btn-primary">+</button>
+                            <button type="button" id="remove-button-0" class="btn btn-primary">-</button>
+                        </div>
+
+                        <div class="image-slide">
+                            <button type="button" id="left-arrow-0" class="btn btn-secondary">&lt;</button>
+                        </div>
+
+                        <div class="item-info-image mb-3">
+                            <img id="item-image-preview-0" src="{{ url_for('static', filename='inventory-pics/default/no-image.png')}}" alt="placeholder" style="margin-top: 10px;">
+                            <input type="file" id="item-image-0" name="item-image-0" accept="image/*" style="display: none;" multiple>
+                        </div>
+
+                        <div class="image-slide">
+                            <button type="button" id="right-arrow-0" class="btn btn-secondary">&gt;</button>
+                        </div>
+                        
+                        <div class="item-info-text mb-3">
+                            <input class="form-control mx-auto w-auto" type="text" required id="item-name-0" name="item-name-0" placeholder="Item name">
+                            <input class="form-control mx-auto w-auto" type="text" required id="item-price-0" name="item-price-0" placeholder="Item price">
+                            <input class="form-control mx-auto w-auto" type="number" required id="item-quantity-0" name="item-quantity-0"  placeholder="Item quantity">
+                        </div>    
+                    </div>
+                    <div class="item-description mb-3">
+                        <label for="item-description-0">Description:</label>
+                        <textarea class="form-control mx-auto w-auto" required id="item-description-0" name="item-description-0" rows="2" cols="50"></textarea>
+                    </div>
+                    <div class="options-container mb-3">
+                        <button id="add-0" name="add-0" type="submit" class="btn btn-primary">Add item</button>
                     </div>
                 </div>
             </form>
