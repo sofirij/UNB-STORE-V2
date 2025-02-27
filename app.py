@@ -92,6 +92,8 @@ def inventory():
     """"Display the inventory of the user and allow the user to edit their inventory"""
     user_id = session["user_id"]
     inventory = getUserInventory(user_id)
+    item_ids = getItemIds(user_id)
+    inventory = zip(inventory, item_ids)
     return render_template("inventory.html", inventory=inventory, filenames=INVENTORY_FILENAMES)
 
 @app.route("/inventory/update/<int:item_id>", methods=["PUT"])
@@ -139,12 +141,6 @@ def addInventory():
             return jsonify({"successful": False, "message": "Please upload images less than 10MB"})
         if not isValidExtension(image.filename):
             return jsonify({"successful": False, "message": "Invalid file extension"})
-        
-    # Print the image size for debugging
-    for image in images:
-        image_size = len(image.read())
-        print(f"Received file: {image.filename}, size: {image_size} bytes")
-        image.seek(0)  # Reset file pointer to the beginning
     
     # Insert a new user_id into the database and return the new item_id
     item_id = newItemToInventory(user_id)
@@ -159,6 +155,11 @@ def addInventory():
     for image, filename in zip(images, image_filenames):
         image.save(os.path.join('static', 'inventory-pics', f'user-{user_id}', filename))
     return jsonify({"successful": True})
+
+@app.route("/test", methods=["GET"])
+def test():
+    inventory = [1, 2, 3, 4]
+    return render_template("test.html", inventory=inventory)
 
 if __name__ == "__main__":
     app.run(debug=True, host='0.0.0.0', port=5000)  

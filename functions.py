@@ -228,3 +228,13 @@ def isValidSize(file):
 def isValidExtension(filename):
     """Check if the file has an allowed extension"""
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
+
+def getItemIds(user_id):
+    """Get the list of item ids for the specified user"""
+    with sqlite3.connect("app.db") as conn:
+        cursor = conn.cursor()
+        query = "SELECT item_id FROM inventory WHERE user_id = ? and expired = 0"
+        cursor.execute(query, (user_id,))
+        result = cursor.fetchall()
+    
+    return [item[0] for item in result]

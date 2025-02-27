@@ -11,9 +11,9 @@ document.addEventListener("DOMContentLoaded", function() {
         images[itemId] = [];
         currentIndex[itemId] = 0;
         originalValues[itemId] = { fields: {}, images: [] };
-        const imageElements = form.querySelectorAll(`img[id^='item-image-preview-${itemId}']`);
-        imageElements.forEach(function(img) {
-            images[itemId].push(img.src);
+        const imageElements = form.dataset.imageFilenames;
+        imageElements.forEach(image => {
+            images[itemId].push(image);
             originalValues[itemId].images.push(img.src);
         });
 
@@ -209,7 +209,7 @@ document.addEventListener("DOMContentLoaded", function() {
 
     // for the edit button
     document.querySelectorAll("[id^='edit-']").forEach(function(input) {
-        button.addEventListener("click", handleEditButtonClick);
+        input.addEventListener("click", handleEditButtonClick);
     });
 
     // for the cancel button
