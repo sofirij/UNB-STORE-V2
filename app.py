@@ -145,9 +145,6 @@ def addInventory():
         image_size = len(image.read())
         print(f"Received file: {image.filename}, size: {image_size} bytes")
         image.seek(0)  # Reset file pointer to the beginning
-        
-    # Halt execution
-    return jsonify({"successful": True})
     
     # Insert a new user_id into the database and return the new item_id
     item_id = newItemToInventory(user_id)

@@ -216,6 +216,7 @@ def isImage(file):
     try:
         with Image.open(file) as img:
             img.verify()
+            file.seek(0)
             return True
     except Exception:
         return False

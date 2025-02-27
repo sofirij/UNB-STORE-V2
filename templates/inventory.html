@@ -64,7 +64,7 @@
     {% else %}
             <p>Add your first item</p>
 
-            <form id="inventory-form-0" action="/inventory/add" method="POST">
+            <form id="inventory-form-0" action="/inventory/add" method="POST" enctype="multipart/form-data">
                 <div class="item-container mb-3">
                     <div class="category-container mb-3">
                         <select class="form-control mx-auto w-auto" id="categories-0" name="categories-0" required>
