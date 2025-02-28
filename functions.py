@@ -180,7 +180,7 @@ def getUserInventory(user_id):
     inventory_list = [json.loads(item[0]) for item in result]
     return inventory_list
 
-def deleteInventory(item_id):
+def deleteFromInventory(item_id):
     """"Mark item as expired in the database"""
     with sqlite3.connect("app.db") as conn:
         cursor = conn.cursor()
@@ -188,11 +188,11 @@ def deleteInventory(item_id):
         cursor.execute(query, (item_id,))
         conn.commit()
         
-def createFilenames(fileExtensions, indexes, item_Id):
+def createFilenames(fileExtensions, item_Id):
     """Create a list of filenames for the new files"""
     filenames = []
-    for idx, ext in zip(indexes, fileExtensions):
-        filenames.append(f"{item_Id}-{uuid.uuid4()}-{idx}.{ext}")
+    for ext in fileExtensions:
+        filenames.append(f"{item_Id}-{uuid.uuid4()}.{ext}")
     
     return filenames
 
@@ -238,3 +238,18 @@ def getItemIds(user_id):
         result = cursor.fetchall()
     
     return [item[0] for item in result]
+
+def getImageFilenames(item_id):
+    """Get the list of image filenames for the specified item"""
+    with sqlite3.connect("app.db") as conn:
+        cursor = conn.cursor()
+        query = "SELECT item_data FROM inventory WHERE item_id= ?"
+        result = cursor.execute(query, (item_id,)).fetchone()
+    
+    return json.loads(result[0])["image_filenames"]
+
+def deleteFromFileSystem(image_filenames, user_id):
+    """Delete image from the file system"""
+    for filename in image_filenames:
+        path = os.path.join("static", "inventory-pics", f"user-{user_id}", filename)
+        os.remove(path)

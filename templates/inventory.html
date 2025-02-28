@@ -9,12 +9,16 @@
 {% block main %}
 
         {% for item, item_id in inventory %}
-            {% set directory = "inventory-pics/user-" ~ session['user_id'] ~ "/" %}
-            <form id="inventory-form-{{ loop.index }}" action="/inventory/add" method="POST" data-image-filenames="{{ item.image_filenames | map('prefix', directory) | join('/') }}" enctype="multipart/form-data">
+            {% set directory = "static/inventory-pics/user-" ~ session['user_id'] ~ "/" %}
+            {% set image_sources = [] %}
+            {% for filename in item.image_filenames %}
+                {% set _ = image_sources.append(directory ~ filename) %}
+            {% endfor %}
+            <form id="inventory-form-{{ loop.index }}" action="/inventory/add" method="POST" data-image-sources="{{ image_sources }}" data-db-item-id="{{ item_id }}" enctype="multipart/form-data">
                 <div class="item-container mb-3">
                     <div class="category-container mb-3">
                         <select class="form-control mx-auto w-auto" id="categories-{{ loop.index }}" name="categories-{{ loop.index }}" required disabled>
-                            <option value="{{ item.category }}" disabled selected>{{ item.category }}</option>
+                            <option value="{{ item.category }}" selected>{{ item.category }}</option>
                             {% for filename in filenames %}
                                 <option value="{{ filename }}">{{ filename }}</option>
                             {% endfor %}
@@ -57,15 +61,15 @@
                     <div class="options-container mb-3">
                         <button id="edit-{{ loop.index }}" name="edit-{{ loop.index }}" type="button" class="btn btn-primary">Edit</button>
                         <button id="delete-{{ loop.index }}" name="delete-{{ loop.index }}" type="button" class="btn btn-danger">Delete</button>
-                        <button id="save-{{ loop.index }}" name="save-{{ loop.index }}" type="button" class="btn btn-success" style="display: none;">Save</button>
-                        <button id="cancel-{{ loop.index }}" name="cancel-{{ loop.index }}" type="button" class="btn btn-secondary" style="display: none;">Cancel</button>
+                        <button id="save-{{ loop.index }}" name="save-{{ loop.index }}" type="button" class="btn btn-success" style="display: none;" disabled>Save</button>
+                        <button id="cancel-{{ loop.index }}" name="cancel-{{ loop.index }}" type="button" class="btn btn-secondary" style="display: none;" disabled>Cancel</button>
                     </div>
                 </div>
             </form>
         {% else %}
             <p>Add your first item</p>
 
-            <form id="inventory-form-0" action="/inventory/add" method="POST" enctype="multipart/form-data">
+            <form id="inventory-form-0" action="/inventory/add" method="POST" enctype="multipart/form-data" data-image-sources="[]">
                 <div class="item-container mb-3">
                     <div class="category-container mb-3">
                         <select class="form-control mx-auto w-auto" id="categories-0" name="categories-0" required>

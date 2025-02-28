@@ -4,23 +4,32 @@ document.addEventListener("DOMContentLoaded", function() {
     const currentIndex = {};
     const originalValues = {};
     const newFiles = [];
+    const defaultImage = "/static/inventory-pics/default/no-image.png";
 
     // Initialize images, original values and currentIndex for each item
     document.querySelectorAll("[id^='inventory-form-']").forEach(function (form) {
         const itemId = form.id.split("-")[2];
+        const imageSources = form.dataset.imageSources === "[]" ? [] : form.dataset.imageSources.slice(2, -2).split("', '");
         images[itemId] = [];
-        currentIndex[itemId] = 0;
+
+        if (imageSources.length > 0) {
+            currentIndex[itemId] = 0;
+        } else {
+            currentIndex[itemId] = -1;
+        }
+        
         originalValues[itemId] = { fields: {}, images: [] };
-        const imageElements = form.dataset.imageFilenames;
-        imageElements.forEach(image => {
-            images[itemId].push(image);
-            originalValues[itemId].images.push(img.src);
+        imageSources.forEach((src) => {
+            images[itemId].push(src);
+            originalValues[itemId].images.push(src);
         });
 
         // Store original values
         form.querySelectorAll("input, select, textarea").forEach(function (input) {
             originalValues[itemId].fields[input.id] = input.value
         });
+
+        console.log(imageSources);
     });
 
     // Function to handle image upload
@@ -34,8 +43,9 @@ document.addEventListener("DOMContentLoaded", function() {
             reader.onload = function(e) {
                 images[itemId].push(e.target.result);
                 currentIndex[itemId] = images[itemId].length - 1;
-                newFiles.push({image: file, index: currentIndex[itemId]})
+                newFiles.push(file)
                 displayImage(itemId, currentIndex[itemId], imagePreview);
+                console.log(images[itemId]);
 
             };
             reader.readAsDataURL(file);
@@ -44,13 +54,23 @@ document.addEventListener("DOMContentLoaded", function() {
 
     // Function to display image
     function displayImage(itemId, index, imagePreview) {
-        imagePreview.src = images[itemId][index];
-        imagePreview.style.display = "block";
+        if (index >= 0 && index < images[itemId].length)
+        {
+            imagePreview.src = images[itemId][index];
+            imagePreview.style.display = "block";
+        }
+        else
+        {
+            imagePreview.src = defaultImage;
+            imagePreview.style.display = "block";
+        }
+
         console.log(`Item ID: ${itemId}, Image Index: ${index}`);
     }
 
     // Function to handle edit button clicked
     function handleEditButtonClick(event) {
+        console.log("Edit button clicked");
         const button = event.target;
         const itemId = button.id.split("-")[1];
         toggleEditMode(itemId);
@@ -59,34 +79,44 @@ document.addEventListener("DOMContentLoaded", function() {
 
     // Function to handle save button clicked
     function handleSaveButtonClick(event) {
+        console.log("Save button clicked");
         const button = event.target;
         const itemId = button.id.split('-')[1];
         const form = document.getElementById(`inventory-form-${itemId}`);
+        const dbItemId = form.dataset.dbItemId;
+        const originalImages = images[itemId].filter((image) => originalValues[itemId].images.includes(image));
+        const originalFilenames = [];
+        originalImages.forEach((image) => {
+            originalFilenames.push(image.split("/").slice(-1)[0]);
+        });
+
+
 
         // update original values
-        form.querySelectorAll("input, select, text").forEach(function (input) {
+        form.querySelectorAll("input, select, textarea").forEach(function (input) {
             originalValues[itemId].fields[input.id] = input.value;
         });
         originalValues[itemId].images = [...images[itemId]]
 
         // Send AJAX request to update the information in the database
         const formData = new FormData(form);
-        const fileInput = document.getElementById(`item-image-${itemId}`);
-        for (let i = 0; i < fileInput.files.length; i++) {
-            formData.append('images', fileInput.files[i]);
-        }
-        formData.append('image_filenames', JSON.stringify(images[itemId].slice(1)));
+        newFiles.forEach(file => {
+            formData.append('new-images', file);
+        });
+        originalFilenames.forEach((filename) => {
+            formData.append("original-filenames", filename);
+        });
+        formData.append("name-id", itemId);
 
-        fetch(`/inventory/update/${itemId}`, {
-            method: "POST",
+        fetch(`/inventory/update/${dbItemId}`, {
+            method: "PUT",
             body: formData,
         })
         .then(response => response.json())
         .then(data => {
             console.log('Success:', data);
             toggleEditMode(itemId);
-            newFiles = [];
-            location.reload();
+            newFiles.length = 0;
         })
         .catch((error) => {
             console.error('Error:', error);
@@ -96,17 +126,18 @@ document.addEventListener("DOMContentLoaded", function() {
 
     // Function to handle cancel button click
     function handleCancelButtonClick(event) {
+        console.log("Cancel button clicked");
         const button = event.target;
         const itemId = button.id.split('-')[1];
         const form = document.getElementById(`inventory-form-${itemId}`);
 
         // reset form fields to original values
-        form.querySelectorAll("input, select< textarea").forEach(function (input) {
+        form.querySelectorAll("input, select, textarea").forEach(function (input) {
             input.value = originalValues[itemId].fields[input.id];
         });
 
         // reset images to original values
-        images[item] = [...originalValues[itemId].images];
+        images[itemId] = [...originalValues[itemId].images];
         currentIndex[itemId] = 0;
         displayImage(itemId, currentIndex[itemId], document.getElementById(`item-image-preview-${itemId}`));
 
@@ -118,24 +149,25 @@ document.addEventListener("DOMContentLoaded", function() {
         const button = event.target;
         const itemId = button.id.split('-')[1];
         const form = document.getElementById(`inventory-form-${itemId}`);
+        const dbItemId = form.dataset.dbItemId;
+        console.log(dbItemId);
 
         // Send AJAX request to the backed to delete the item
-        fetch(`/inventory/delete/${itemId}`, {
+        fetch(`/inventory/delete/${dbItemId}`, {
             method: "DELETE",
-            headers: {
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify({item_id: itemId})
         })
-        .then(response => response.json())
+        .then(response => {
+            if (!response.ok) {
+                throw new Error(`HTTP error! Status: ${response.status}`);
+            }
+            return response.json();
+        })
         .then(data => {
             console.log('Success:', data);
-            //remove the item from the DOM
-            const form = document.getElementById(`inventory-form-${itemId}`);
-            form.remove();
+            location.reload();
         })
         .catch((error) => {
-            console.errror('Error:', error);
+            console.error('Error:', error);
         });
     }
 
@@ -149,7 +181,7 @@ document.addEventListener("DOMContentLoaded", function() {
         const cancelButton = document.getElementById(`cancel-${itemId}`);
 
         inputs.forEach(function(input) {
-            if (input.type !== "button" && input.type !== "submit") {
+            if (!input.id.includes("-arrow-")) {
                 input.disabled = !input.disabled;
             }
         });
@@ -193,10 +225,15 @@ document.addEventListener("DOMContentLoaded", function() {
     document.querySelectorAll("[id^='remove-button-']").forEach(function(button) {
         button.addEventListener("click", function() {
             const itemId = button.id.split('-')[2];
-            if (currentIndex[itemId] > 0)
+            if (images[itemId].length > 0)
             {
                 images[itemId].splice(currentIndex[itemId], 1);
-                currentIndex[itemId]--;
+                if (images[itemId].length === 0) {
+                    currentIndex[itemId] = -1;
+                }
+                else {
+                    currentIndex[itemId] = currentIndex[itemId] % images[itemId].length;
+                }
                 displayImage(itemId, currentIndex[itemId], document.getElementById(`item-image-preview-${itemId}`));
             }
         });
@@ -208,18 +245,24 @@ document.addEventListener("DOMContentLoaded", function() {
     });
 
     // for the edit button
-    document.querySelectorAll("[id^='edit-']").forEach(function(input) {
-        input.addEventListener("click", handleEditButtonClick);
+    document.querySelectorAll("[id^='edit-']").forEach(function(button) {
+        button.addEventListener("click", handleEditButtonClick);
+    });
+
+    //for the save button
+    document.querySelectorAll("[id^='save-']").forEach(function(button) {
+        button.addEventListener("click", handleSaveButtonClick);
     });
 
     // for the cancel button
-    document.querySelectorAll("[id='cancel-']").forEach(function(button) {
+    document.querySelectorAll("[id^='cancel-']").forEach(function(button) {
         button.addEventListener("click", handleCancelButtonClick);
     });
 
     // for the left arrow button
     document.querySelectorAll("[id^='left-arrow-']").forEach(function(button) {
         button.addEventListener("click", function() {
+            console.log("Left arrow clicked");
             const itemId = button.id.split('-')[2];;
             if (images[itemId].length > 1) {
                 currentIndex[itemId] = (currentIndex[itemId] + images[itemId].length - 1) % images[itemId].length;
@@ -231,6 +274,7 @@ document.addEventListener("DOMContentLoaded", function() {
     // for the right arrow button
     document.querySelectorAll("[id^='right-arrow-']").forEach(function(button) {
         button.addEventListener("click", function() {
+            console.log("Right arrow clicked");
             const itemId = button.id.split('-')[2];
             if (images[itemId].length > 1) {
                 currentIndex[itemId] = (currentIndex[itemId] + 1) % images[itemId].length;
@@ -257,9 +301,7 @@ document.addEventListener("DOMContentLoaded", function() {
         // send AJAX request to the backend to add the item
         const formData = new FormData(form);
         newFiles.forEach(file => {
-            formData.append('images', file.image);
-            formData.append('indexes', file.index);
-            console.log(`FileSizeInBytes: ${file.image.size} bytes`);
+            formData.append('images', file);
         });
 
         fetch('inventory/add', {
@@ -269,6 +311,7 @@ document.addEventListener("DOMContentLoaded", function() {
         .then(response => response.json())
         .then(data => {
             console.log('Success:', data);
+            location.reload();
         })
         .catch((error) => {
             console.error('Error:', error);

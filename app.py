@@ -98,25 +98,63 @@ def inventory():
 
 @app.route("/inventory/update/<int:item_id>", methods=["PUT"])
 @login_required
-def updateInventory():
+def updateInventory(item_id):
     """"Update the inventory of the user"""
-    data = request.get_json()
-    item_id = data.get('item_id')
-    category = data.get('category')
-    item_filename = data.get('item_filename')
-    price = data.get('price')
-    description = data.get('description')
-    name = data.get('name')
-    quantity = data.get('quantity')
+    id = request.form.get("name-id")
+    category = request.form.get(f"categories-{id}")
+    name = request.form.get(f"item-name-{id}")
+    price = request.form.get(f"item-price-{id}")
+    quantity = request.form.get(f"item-quantity-{id}")
+    description = request.form.get(f"item-description-{id}")
+    originalImages = request.form.getlist("original-filenames")
+    newImages = request.files.getlist("new-images")
+    fileExtensions = [image.filename.split('.')[-1] for image in newImages]
     
-    updateInventory(item_id, category, item_filename, name, price, quantity, description)
+    
+    # Validate files
+    for image in newImages:
+        if not isImage(image):
+            return jsonify({"successful": False, "message": "Please upload only images"})
+        if not isValidSize(image):
+            return jsonify({"successful": False, "message": "Please upload images less than 10MB"})
+        if not isValidExtension(image.filename):
+            return jsonify({"successful": False, "message": "Invalid file extension"})
+    
+    # delete images from file system that are not in original images
+    path = os.path.join('static', 'inventory-pics', f'user-{session["user_id"]}')
+    pattern = re.compile(f'^{item_id}.*')
+    originalFilenames = [filename for filename in os.listdir(path) if pattern.match(filename)]
+    for filename in originalFilenames:
+        if filename not in originalImages:
+            os.remove(os.path.join(path, filename))
+            originalFilenames.remove(filename)
+            
+    # Create a list of new filenames using the item_id and the index
+    newImageFilenames = createFilenames(fileExtensions, item_id)
+    
+    # Create new list of filenames to save
+    filenamesToSave = newImageFilenames.copy()
+    for filename in originalImages:
+        if filename in originalFilenames:
+            filenamesToSave.append(filename)
+    
+    # Update the info in that row with the new filenames and other item info
+    updateItemDetails(item_id, category, name, price, quantity, description, filenamesToSave)
+    
+    # Store files in the file system
+    for image, filename in zip(newImages, newImageFilenames):
+        image.save(os.path.join('static', 'inventory-pics', f'user-{session["user_id"]}', filename))
+        
     return jsonify({"successful": True})
 
 @app.route("/inventory/delete/<int:item_id>", methods=["DELETE"])
 @login_required
 def deleteInventory(item_id):
-    """"Delete an item from the inventory of the user"""  
-    deleteInventory(item_id)
+    """"Delete an item from the inventory of the user""" 
+    userId = session["user_id"] 
+    deleteFromInventory(item_id)
+    imageFilenames = getImageFilenames(item_id)
+    deleteFromFileSystem(imageFilenames, userId)
     return jsonify({"successful": True})
 
 @app.route("/inventory/add", methods=["POST"])
@@ -129,7 +167,6 @@ def addInventory():
     price = request.form.get("item-price-0")
     quantity = request.form.get("item-quantity-0")
     description = request.form.get("item-description-0")
-    indexes = request.form.getlist("indexes")
     images = request.files.getlist("images")
     fileExtensions = [image.filename.split('.')[-1] for image in images]
     
@@ -146,7 +183,7 @@ def addInventory():
     item_id = newItemToInventory(user_id)
     
     # Then create a list of new filenames using the item_id and the index
-    image_filenames = createFilenames(fileExtensions, indexes, item_id)
+    image_filenames = createFilenames(fileExtensions, item_id)
     
     # Then update the info in that row with the new filenames and other item info 
     updateItemDetails(item_id, category, name, price, quantity, description, image_filenames)
