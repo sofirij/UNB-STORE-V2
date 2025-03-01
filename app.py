@@ -94,7 +94,7 @@ def inventory():
     inventory = getUserInventory(user_id)
     item_ids = getItemIds(user_id)
     inventory = zip(inventory, item_ids)
-    return render_template("inventory.html", inventory=inventory, filenames=INVENTORY_FILENAMES)
+    return render_template("inventory.html", inventory=inventory, filenames=CATEGORIES, isEmpty=item_ids == [])
 
 @app.route("/inventory/update/<int:item_id>", methods=["PUT"])
 @login_required
@@ -193,10 +193,9 @@ def addInventory():
         image.save(os.path.join('static', 'inventory-pics', f'user-{user_id}', filename))
     return jsonify({"successful": True})
 
-@app.route("/test", methods=["GET"])
-def test():
-    inventory = [1, 2, 3, 4]
-    return render_template("test.html", inventory=inventory)
+@app.route("/api/categories", methods=["GET"])
+def getCategories():
+    return jsonify({"categories":CATEGORIES, "successful": True})
 
 if __name__ == "__main__":
     app.run(debug=True, host='0.0.0.0', port=5000)  

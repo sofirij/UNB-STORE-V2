@@ -6,6 +6,15 @@
     <link href="{{ url_for('static', filename='css/inventory.css')}}" rel="stylesheet">
 {% endblock %}
 
+{% block add %}
+    {% if not isEmpty %}
+        <div class="mb-3" align="center">
+            <p>Add a new item</p>
+            <button type="button" id="add-item" class="btn btn-primary">Add item</button>
+        </div>
+    {% endif %}
+{% endblock %}
+
 {% block main %}
 
         {% for item, item_id in inventory %}
@@ -67,7 +76,9 @@
                 </div>
             </form>
         {% else %}
-            <p>Add your first item</p>
+            <div class="mb-3" align="center">
+                <p>Add your first item</p>
+            </div>
 
             <form id="inventory-form-0" action="/inventory/add" method="POST" enctype="multipart/form-data" data-image-sources="[]">
                 <div class="item-container mb-3">

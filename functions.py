@@ -7,8 +7,8 @@ import os
 import uuid
 from PIL import Image
 
-# List of valid inventory filenames
-INVENTORY_FILENAMES = ["books-and-study-materials", "clothing-and-accessories", "electronics-and-gadgets", "furniture-and-home-essentials", "miscellaneous", "services", "sports-and-fitness", "transportation-and-mobility"]
+# List of valid categories
+CATEGORIES = ["books-and-study-materials", "clothing-and-accessories", "electronics-and-gadgets", "furniture-and-home-essentials", "miscellaneous", "services", "sports-and-fitness", "transportation-and-mobility"]
 
 # List of valid image extensions
 ALLOWED_EXTENSIONS = ["jpg", "jpeg", "png", "gif"]
