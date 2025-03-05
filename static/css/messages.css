@@ -1,0 +1,46 @@
+.search-container {
+    display: flex;
+    justify-content: center;
+    margin-top: 20px;
+    align-self: center;
+    align-content: center;
+}
+
+.user-list {
+    width: 200px; /* Set a fixed width */
+    height: 300px; /* Set a fixed height */
+    overflow-y: auto; /* Enable vertical scrolling */
+    border: 1px solid #ccc; /* Optional: Add a border */
+    border-radius: 5px; /* Optional: Add rounded corners */
+    align-self: center;
+    align-content: center;  
+    justify-content: center;
+    margin: 0 auto;
+  }
+  
+.user-list ul {
+    list-style-type: none; /* Remove bullet points */
+    padding: 0; /* Remove default padding */
+    margin: 0; /* Remove default margin */
+}
+
+.user-list li {
+    padding: 10px; /* Add padding to each user item */
+    border-bottom: 1px solid #eee; /* Optional: Add a separator between users */
+}
+
+.user-list li:last-child {
+    border-bottom: none; /* Remove border from the last item */
+}
+
+a {
+    color: inherit; /* Inherit the color from the parent element */
+    text-decoration: none; /* Optional: Remove underline */
+}
+
+a:visited,
+a:hover,
+a:active,
+a:focus {
+    color: inherit; /* Ensure the color stays the same in all states */
+}

@@ -1,0 +1,27 @@
+{% extends "layout.html" %}
+
+{% block title %} inventory {% endblock %}
+
+{% block link %} 
+    <link href="{{ url_for('static', filename='css/messages.css')}}" rel="stylesheet">
+{% endblock %}
+
+{% block main %}
+    <div class="mb-3 search-container">
+        <form id="query" name="query" method="GET">
+            <div class="mb-3" align="center">
+                <input class="form-control mx-auto w-auto" required  name="search-query" id="search-query" placeholder="Search for user" type="text">
+            </div>
+        </form>
+    </div>
+
+    <div class="user-list">
+        <ul id="users">
+        </ul>
+    </div>
+
+{% endblock %}
+
+{% block script %}
+    <script src="{{ url_for('static', filename='js/messages.js') }}"></script>
+{% endblock %}

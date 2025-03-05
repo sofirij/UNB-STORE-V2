@@ -193,7 +193,21 @@ def addInventory():
         image.save(os.path.join('static', 'inventory-pics', f'user-{user_id}', filename))
     return jsonify({"successful": True})
 
+@app.route("/messages", methods=["GET"])
+@login_required
+def messages():
+    return render_template("messages.html")
+
+@app.route("/messages/search_users/<string:query>", methods=["GET"])
+@login_required
+def search(query):
+    """Search for users in the database"""
+    users = searchForUsers(query, session["user_id"])
+    return jsonify({"users": users})
+    
+
 @app.route("/api/categories", methods=["GET"])
+@login_required
 def getCategories():
     return jsonify({"categories":CATEGORIES, "successful": True})
 

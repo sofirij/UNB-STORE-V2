@@ -10,7 +10,7 @@
 }
 
 .category-container {
-    width: 50%;
+    width: 100%;
     background-color: #f4f4f4;
     margin: 0 auto;
     display: flex;
@@ -52,6 +52,7 @@
     flex-direction: column;
     justify-content: space-between;
     align-items: center;
+    display: flex;
 }
 
 .image-upload button {
@@ -97,4 +98,8 @@
     align-items: center;
 }
 
-
+@media (max-width) {
+    .item-container {
+        width: 700px;
+    }
+}
