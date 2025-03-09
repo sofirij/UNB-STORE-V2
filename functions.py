@@ -254,12 +254,12 @@ def deleteFromFileSystem(image_filenames, user_id):
         path = os.path.join("static", "inventory-pics", f"user-{user_id}", filename)
         os.remove(path)
         
-def searchForUsers(query, user_id):
+def searchForUsers(search_query, user_id):
     """Search for users in the database"""
     with sqlite3.connect("app.db") as conn:
         cursor = conn.cursor()
-        query = "SELECT display_name FROM users WHERE display_name LIKE ? AND user_id != ?"
-        cursor.execute(query, (f"%{query}%", user_id))
+        query = "SELECT display_name FROM users WHERE LOWER(display_name) LIKE LOWER(?) AND user_id != ?"
+        cursor.execute(query, (f'%{search_query}%', user_id))
         result = cursor.fetchall()
     
     return [user[0] for user in result]

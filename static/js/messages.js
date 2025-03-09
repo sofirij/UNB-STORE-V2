@@ -9,6 +9,7 @@ document.addEventListener('DOMContentLoaded', function() {
         {
             return users;
         }
+        console.log(input.value);
         
         try {
             const response = await fetch(`/messages/search_users/${input.value}`);

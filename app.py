@@ -203,6 +203,7 @@ def messages():
 def search(query):
     """Search for users in the database"""
     users = searchForUsers(query, session["user_id"])
+    print(users)
     return jsonify({"users": users})
     
 
