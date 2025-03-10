@@ -205,6 +205,15 @@ def search(query):
     users = searchForUsers(query, session["user_id"])
     print(users)
     return jsonify({"users": users})
+
+@app.route("/messages/interact/<string:display_name>", methods=["GET", "POST"])
+@login_required
+def interact(display_name):
+    if request.method == "POST":
+        return jsonify({"false" : False})
+    else:
+        pathToProfilePic = getPathToProfilePic(display_name)
+        return render_template("messages-interact.html", pathToProfilePic=pathToProfilePic, displayName=display_name)
     
 
 @app.route("/api/categories", methods=["GET"])

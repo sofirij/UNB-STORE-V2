@@ -10,6 +10,9 @@ from PIL import Image
 # List of valid categories
 CATEGORIES = ["books-and-study-materials", "clothing-and-accessories", "electronics-and-gadgets", "furniture-and-home-essentials", "miscellaneous", "services", "sports-and-fitness", "transportation-and-mobility"]
 
+
+
+
 # List of valid image extensions
 ALLOWED_EXTENSIONS = ["jpg", "jpeg", "png", "gif"]
 
@@ -40,7 +43,7 @@ def registerUsername(username, password, displayName):
     # add user profile pic path to the database
     with sqlite3.connect("app.db") as conn:
         cursor = conn.cursor()
-        query = "INSERT INTO profile_pics (user_id, filename) VALUES (?, 'default')"
+        query = "INSERT INTO profile_pics (user_id, filename) VALUES (?, NULL)"
         cursor.execute(query, (getUserId(username),))
         conn.commit()
     
@@ -263,3 +266,19 @@ def searchForUsers(search_query, user_id):
         result = cursor.fetchall()
     
     return [user[0] for user in result]
+
+def getPathToProfilePic(display_name):
+    """Get path to profile pic for user with the display name"""
+    DEFAULT_PROFILE_PIC_PATH = url_for('static', filename="profile-pics/default.png")
+    
+    with sqlite3.connect("app.db") as conn:
+        cursor = conn.cursor()
+        query1 = "SELECT user_id FROM users WHERE display_name = ?"
+        query2 = "SELECT filename FROM profile_pics WHERE user_id = ?"
+        user_id = cursor.execute(query1, (display_name, )).fetchone()[0]
+        filename = cursor.execute(query2, (user_id, )).fetchone()[0]
+        
+    if filename:
+        return url_for("static", filename=f"profile-pics/user_{user_id}")
+    return DEFAULT_PROFILE_PIC_PATH
+    

@@ -98,6 +98,22 @@
     align-items: center;
 }
 
+.fab {
+    position: fixed;
+    bottom: 20px; /* Distance from the bottom */
+    right: 20px; /* Distance from the right */
+    z-index: 1000;
+    width: 100px;
+    height: 70px;
+    border-radius: 50%; /* Makes it circular */
+    background-color: #007bff;
+    color: white;
+    border: none;
+    font-size: 12px;
+    cursor: pointer;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Adds a shadow for better visibility */
+  }
+
 @media (max-width) {
     .item-container {
         width: 700px;

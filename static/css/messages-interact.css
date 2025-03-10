@@ -1,0 +1,31 @@
+.profile-info-container {
+    align-self: center;
+    justify-content: center;
+    border: solid 2px brown;
+    margin: 0 auto;
+    text-align: center;
+}
+
+.profile-info-list {
+    border: 1px solid #ccc;
+    align-self: center;
+    justify-content: center;
+    margin: 0 auto;
+    width: 200px;
+    height: 150px;
+    padding: 0;
+    list-style: none;
+}
+
+.profile-pic {
+    width: 150px;
+    height: 100px;
+    display: block;
+    margin: 0 auto;
+    border: solid 2px brown;
+}
+
+.display-name {
+    margin: 0 auto;
+    display: block
+}

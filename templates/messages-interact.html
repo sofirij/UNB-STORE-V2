@@ -1,0 +1,24 @@
+{% extends "layout.html" %}
+
+{% block title %} messages {% endblock %}
+
+{% block link %} 
+    <link href="{{ url_for('static', filename='css/messages-interact.css')}}" rel="stylesheet">
+{% endblock %}
+
+{% block main %}
+    <div class="mb-3 profile-info-container">
+        <ul class="profile-info-list">
+            <li>
+                <img src="{{ pathToProfilePic }}" id="person2-pic" class="rounded-circle profile-pic" alt="Profile Picture of person2">
+            </li>
+            <li>
+                <span class="display-name">{{ displayName }}</span>
+            </li>
+        </ul>
+    </div>
+{% endblock %}
+
+{% block script %}
+    <script src="{{ url_for('static', filename='js/messages-interact.js') }}"></script>
+{% endblock %}

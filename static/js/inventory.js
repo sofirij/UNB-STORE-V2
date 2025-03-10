@@ -303,6 +303,7 @@ document.addEventListener("DOMContentLoaded", function() {
         // to show the new form when the add new item button is clicked
         if (addItemButton) {
             addItemButton.addEventListener("click", function() {
+                addItemButton.style.display = 'none ';
                 console.log("Add new item button clicked");
                 const main = document.getElementById("main");
                 let categories;
